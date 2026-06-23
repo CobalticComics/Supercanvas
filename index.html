@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supercanvas: Final Ultimate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Kalam:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --comic-blue: #00d4ff;
+            --comic-pink: #ff007b;
+            --comic-yellow: #ffea00; 
+            --page-yellow: #fce83a;
+            --text-backdrop: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0px 2px 0 #000, 0px -2px 0 #000, 2px 0px 0 #000, -2px 0px 0 #000, 4px 4px 0 #000;
+            --small-backdrop: 1.5px 1.5px 0 #000, -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 0px 1.5px 0 #000, 0px -1.5px 0 #000, 1.5px 0px 0 #000, -1.5px 0px 0 #000, 2px 2px 0px #000;
+        }
+
+        body { 
+            background-color: #111;
+            background-image: radial-gradient(#222 15%, transparent 16%);
+            background-size: 20px 20px;
+            color: #fff; 
+            font-family: 'Kalam', cursive; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+
+        #music-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--comic-yellow);
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 1.5rem;
+        }
+
+        .app-container { 
+            max-width: 750px; 
+            width: 100%; 
+            background: var(--page-yellow);
+            padding: 30px; 
+            border: 6px solid #000; 
+            box-shadow: 15px 15px 0px #000; 
+            border-radius: 2px;
+        }
+
+        .codename-box {
+            background: #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 4px solid #fff;
+            box-shadow: 8px 8px 0px var(--comic-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        select {
+            background: none;
+            border: none;
+            color: #fff;
+            font-family: 'Bangers', cursive;
+            font-size: 1.3rem;
+            text-shadow: var(--small-backdrop);
+            cursor: pointer;
+            width: 100%;
+            appearance: none;
+            text-align: center;
+        }
+        select:focus { outline: none; }
+        option { background: #333; color: #fff; font-family: sans-serif; font-size: 1rem; }
+        .codename-box select { font-size: 3rem; width: auto; }
+
+        h1 { 
+            font-family: 'Bangers', system-ui;
+            color: #fff; 
+            text-align: center; 
+            margin: 0; 
+            font-size: 4.5rem; 
+            text-transform: uppercase; 
+            letter-spacing: 4px;
+            text-shadow: var(--text-backdrop);
+            line-height: 0.85;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle { 
+            text-align: center; 
+            font-size: 1.4rem; 
+            color: #fff; 
+            margin-bottom: 25px; 
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 2.5px 2.5px 0 #000;
+            background: var(--comic-pink);
+            padding: 5px;
+            border: 3px solid #000;
+            letter-spacing: 2px;
+        }
+        
+        .trait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .trait-row { 
+            display: flex; 
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.15); 
+            padding: 8px 12px; 
+            border: 3px solid #000; 
+            box-shadow: 4px 4px 0px #000;
+            position: relative;
+        }
+
+        .trait-label { 
+            font-size: 0.7rem; 
+            color: var(--comic-yellow); 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            text-shadow: 1.5px 1.5px 0 #000;
+        }
+
+        .lock-btn { 
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: white; 
+            border: 1px solid #000; 
+            cursor: pointer; 
+            font-size: 0.7rem;
+            padding: 2px;
+            z-index: 5;
+        }
+        .lock-btn.active { background: var(--comic-pink); color: white; }
+
+        button#roll { 
+            width: 100%; 
+            padding: 15px; 
+            border: 5px solid #000; 
+            background: var(--comic-blue); 
+            color: #fff; 
+            font-family: 'Bangers', cursive;
+            font-size: 3.5rem; 
+            cursor: pointer; 
+            margin-top: 30px; 
+            box-shadow: 8px 8px 0px #000;
+            text-shadow: var(--text-backdrop);
+        }
+        button#roll:hover { background: #00ff88; }
+
+        .backstory-box { 
+            margin-top: 35px; 
+            padding: 20px; 
+            background: #fff; 
+            border: 4px solid #000; 
+            color: #fff;
+            text-shadow: var(--small-backdrop);
+            font-size: 1.1rem;
+            box-shadow: 8px 8px 0px #000;
+            position: relative;
+        }
+
+        .backstory-box::before {
+            content: "THE REVEAL";
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            background: var(--comic-pink); 
+            color: #fff;
+            padding: 2px 12px;
+            border: 3px solid #000;
+            font-family: 'Bangers';
+            font-size: 1.5rem;
+            transform: rotate(-3deg);
+            text-shadow: var(--small-backdrop);
+            z-index: 10;
+        }
+
+        .full-width { grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+<audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a7351b.mp3" type="audio/mpeg">
+</audio>
+
+<button id="music-toggle" title="Toggle Music">🔈</button>
+
+<div class="app-container">
+    <h1>SUPERCANVAS</h1>
+    <p class="subtitle">Hero Generator</p>
+
+    <div class="codename-box">
+        <select id="val-nameFirst"></select>
+        <select id="val-nameLast"></select>
+        <button class="lock-btn" id="lock-codename" style="top: -10px; right: -10px; font-size: 1rem; padding: 5px;">🔒</button>
+    </div>
+
+    <div id="traits" class="trait-grid"></div>
+
+    <button id="roll">SHUFFLE!</button>
+
+    <div class="backstory-box" id="backstory">
+        Hit SHUFFLE to reveal a hero...
+    </div>
+</div>
+
+<script>
+    const powersList = [
+        "Gravity Control", "Technopathy", "Sonic Screams", "Portals", "Kinetic Absorption", "Reality Glitch", "Time Warp", "Pyrokinesis", "Magnetism", "Ice Manipulation", "Mind Reading", "Size Shifting", "Super Strength", "Flight", "Teleportation", "Invisibility", "Phasing", "Energy Blasts", "Force Fields", "Healing Factor", "Telekinesis", "Elasticity", "Night Vision", "Weather Control", "Plant Manipulation", "Animal Mimicry", "Shadow Manipulation", "Light Generation", "Laser Vision", "Invulnerability", "Danger Sense", "Clairvoyance", "Technokinesis", "Molecular Combustion", "Bone Spikes", "Acid Secretion", "Water Breathing", "Cryokinesis", "Electrokinesis", "Photographic Memory", "Duplication", "Density Control", "Emotion Control", "Poison Immunity", "Enhanced Reflexes", "Magnetic Flight", "Sonic Flight", "Dimension Hopping", "Precognition", "Metal Mimicry", "Stone Mimicry", "Fire Breath", "Silk Spinning", "Solar Absorption", "Lunar Empowerment", "Dark Matter Control", "Portal Combat", "Vacuum Adaptation", "Atmospheric Control", "Geokinesis", "Aerokinesis", "Blood Manipulation", "Voice Mimicry", "Camouflage", "Explosive Touch", "Matter Ingestion", "Organic Iron Skin", "Radar Sense", "Vector Manipulation", "Entropy Control", "Probabilty Alteration", "Fear Projection", "Memory Deletion", "Astral Projection", "Object Animation", "Voodoo Link", "Paper Manipulation", "Glass Generation", "Sand Manipulation", "Smoke Mimicry", "Heat Vision", "X-Ray Vision", "Microscopic Vision", "Infinite Stamina", "Weapon Summoning", "Energy Construct", "Spirit Communication", "Gravity Well", "Black Hole Generation", "Star Fire", "Radiation Control", "Organic Armor", "Elastic Limbs", "Body Liquefication", "Techno-Organic Growth", "Nanite Swarm", "Hive Mind", "Chain Lightning", "Absolute Zero Touch", "Nova Blast", "Cosmic Awareness", "Quantum Tunneling"
+    ];
+
+    const data = {
+        nameFirst: ["Crimson", "Cobalt", "Silver", "Golden", "Onyx", "Ivory", "Emerald", "Scarlet", "Azure", "Ruby", "Shadow", "Thunder", "Iron", "Steel", "Atomic", "Cyber", "Mega", "Ultra", "Alpha", "Omega", "Solar", "Lunar", "Cosmic", "Ghost", "Wild", "Primal", "Dark", "Light", "Neon", "Electric", "Sonic", "Kinetic", "Frozen", "Blazing", "Jade", "Vivid", "Misty", "Brave", "Stellar", "Titan", "Rogue", "Void", "Silent", "Savage", "Gilded", "Heavy", "Rapid", "Grand", "Mystic", "Chrome", "Amber", "Deep", "High", "Fierce", "Noble", "Ancient", "New", "Swift", "Phantom", "Spectral", "Infinite", "Zero", "Hard", "Hyper", "Meta", "Star", "Cloud", "Storm", "Frost", "Magma", "Abyss", "Dusk", "Dawn", "Aether", "Terra", "Aqua", "Pyro", "Electro", "Geo", "Aero", "Nitro", "Bio", "Techno", "Proto", "Prime", "Elite", "Apex"],
+        nameLast: ["Wolf", "Tiger", "Falcon", "Cobra", "Viper", "Hawk", "Eagle", "Lynx", "Mammoth", "Rhino", "Shark", "Orca", "Beast", "Hound", "Raven", "Owl", "Spider", "Scorpion", "Beetle", "Wasp", "Dragon", "Phoenix", "Griffin", "Titan", "Giant", "Colossus", "Blade", "Shield", "Hammer", "Spear", "Mace", "Bolt", "Arrow", "Sword", "Aegis", "Armor", "Gauntlet", "Cannon", "Burst", "Blast", "Flare", "Spark", "Pulse", "Wave", "Tide", "Storm", "Cyclone", "Monsoon", "Zenith", "Apex", "Peak", "Quake", "Tremor", "Nova", "Star", "Comet", "Meteor", "Nebula", "Galaxy", "Universe", "World", "Heart", "Soul", "Spirit", "Ghost", "Specter", "Wraith", "Revenant", "Phantom", "Knight", "Paladin", "Warrior", "Soldier", "Guardian", "Sentry", "Sentinel", "Slayer", "Striker", "Driver", "Pilot", "Captain", "Commander", "Overlord", "Tyrant", "Legend", "Myth", "Icon", "Idol", "Hero", "Vigilante", "Renegade", "Outlaw", "Shadow", "Stalker", "Walker", "Runner", "Jumper", "Blinker", "Drifter", "Wanderer", "Traveler", "Scout", "Spy", "Ninja", "Shinobi", "Samurai"],
+        species: ["Human", "Construct", "Imaginary Friend", "Demigod", "Mythical Being", "Genetic Experiment", "Android", "Bio-Organic", "Cyborg", "Mutant", "Ancient Deity", "Shadow Being", "Alien", "Ethereal Ghost", "Deep-Sea Hybrid", "Nano-Swarm", "Celestial", "Undead Revibrant", "Primal Beast"],
+        gender: ["Male (Heavy)", "Female (Heavy)", "Male (Lithe)", "Female (Lithe)", "Non-Binary (Tall)", "Genderless"],
+        height: ["Microscopic", "Petite", "Average", "Athletic", "Towering", "Colossal"],
+        power1: powersList,
+        power2: ["None", ...powersList],
+        bodyFeature: ["None", "Leathery Wings", "Feathered Wings", "Prehensile Tail", "Mechanical Arms", "Curved Horns", "Retractable Claws", "Third Eye", "Chitinous Spikes", "Floating Halo", "Multiple Legs"],
+        skin: ["Fair (Natural)", "Tan (Natural)", "Deep (Natural)", "Olive (Natural)", "Pale (Natural)", "Freckled (Natural)", "Chrome", "Scaly", "Porcelain", "Nebula", "Volcanic Rock", "Liquid Gold", "Translucent", "Bark-like", "Weathered Bronze", "Charred Flesh", "Glowing Circuitry"],
+        hairStyle: ["Bald/Shaved", "Undercut", "Long & Flowing", "Tight Braids", "Messy Spikes", "Mohawk", "Top Knot", "Wild Mane", "Slicked Back", "Flaming Hair"],
+        hairColor: ["Brown (Natural)", "Blonde (Natural)", "Black (Natural)", "Red (Natural)", "Grey (Natural)", "White (Natural)", "Auburn (Natural)", "Ink Black", "Platinum White", "Electric Blue", "Neon Green", "Fire Red", "Pastel Pink", "Dual-Tone", "Metallic Silver", "Golden Glow", "Blood Crimson"],
+        eyes: ["Brown (Natural)", "Blue (Natural)", "Green (Natural)", "Hazel (Natural)", "Amber (Natural)", "Grey (Natural)", "Pupilless", "Glowing Red", "Solid Black", "Neon Rings", "Clockwork", "Multiple Eyes", "Burning Smoke", "Star-filled", "Solid White"],
+        powerColor: ["Neon Teal", "Electric Violet", "Crimson", "Emerald", "Black Smoke", "Golden Shimmer", "White Heat", "Solar Orange", "Ghostly Blue"],
+        costume: ["Tactical Armor", "Cyberpunk", "Gothic Victorian", "Retro Spandex", "Fantasy Plate", "Bio-suit", "Regal Robes", "Wasteland Gear", "High-Fashion Suits", "Ancient Samurai"],
+        origin: ["Bustling Mega-Metropolis", "The Darkest Shadow Dimension", "Distant Alien Homeworld", "Grim Dystopian Future", "Untamed Prehistoric Past", "Alternate Steam-Powered Earth", "Hidden Underground Civilization", "Floating Cloud Kingdom", "Neon-Drenched Slums", "Post-Apocalyptic Salt Flats", "The Anti-Matter Mirror Universe", "Submerged Atlantis Ruins", "Radioactive Forbidden Zone", "Victorian Steampunk London", "Dinosaur-Infested Primal Jungle", "High-Tech Orbital Station", "The Void Between Galaxies", "An Infinite Digital Cyberspace", "Volcanic Magma Caverns", "Cursed Graveyard Grounds", "Secret Martial Arts Monastery", "A World Where Magic Replaced Science", "The Center of a Collapsing Star", "A Parallel Anti-Earth", "A Peaceful Kingdom Under Siege", "Moon Mining Colony Gamma", "Inter-Dimensional Nexus Point", "Abandoned Cold War Laboratory", "The Heart of a Supernova", "A Desert Planet with Two Suns"]
+    };
+
+    const locks = {};
+    const traitsContainer = document.getElementById('traits');
+    const music = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+    let isPlaying = false;
+
+    musicBtn.addEventListener('click', () => {
+        if (isPlaying) { music.pause(); musicBtn.innerText = '🔈'; }
+        else { music.play(); musicBtn.innerText = '🔊'; }
+        isPlaying = !isPlaying;
+    });
+
+    function populateDropdown(id, list) {
+        const select = document.getElementById(id);
+        list.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item;
+            opt.innerHTML = item;
+            select.appendChild(opt);
+        });
+        select.addEventListener('change', updateBackstory);
+    }
+
+    Object.keys(data).forEach((key) => {
+        locks[key] = false;
+        if (key !== 'nameFirst' && key !== 'nameLast') {
+            const row = document.createElement('div');
+            row.className = 'trait-row';
+            if (['costume', 'origin', 'bodyFeature', 'species', 'power1', 'power2'].includes(key)) row.classList.add('full-width');
+            
+            row.innerHTML = `
+                <div class="trait-label">${key.replace('power1', 'Primary Power').replace('power2', 'Secondary Power')}</div>
+                <select id="val-${key}"></select>
+                <button class="lock-btn" id="lock-${key}">🔒</button>
+            `;
+            traitsContainer.appendChild(row);
+            populateDropdown(`val-${key}`, data[key]);
+
+            document.getElementById(`lock-${key}`).addEventListener('click', (e) => {
+                locks[key] = !locks[key];
+                e.target.classList.toggle('active');
+                e.target.innerText = locks[key] ? '🔓' : '🔒';
+            });
+        }
+    });
+
+    populateDropdown('val-nameFirst', data.nameFirst);
+    populateDropdown('val-nameLast', data.nameLast);
+    
+    locks['codename'] = false;
+    document.getElementById('lock-codename').addEventListener('click', (e) => {
+        locks['codename'] = !locks['codename'];
+        e.target.classList.toggle('active');
+        e.target.innerText = locks['codename'] ? '🔓' : '🔒';
+    });
+
+    function updateBackstory() {
+        const name = (document.getElementById('val-nameFirst').value + " " + document.getElementById('val-nameLast').value).toUpperCase();
+        const s = document.getElementById('val-species').value;
+        const o = document.getElementById('val-origin').value;
+        const p1 = document.getElementById('val-power1').value;
+        const p2 = document.getElementById('val-power2').value;
+        
+        let storyStart = `A legend emerges! From the depths of ${o}, ${name} arises. `;
+        
+        if (s === "Human") {
+            storyStart += `A purely ${s} hero who reached the pinnacle of potential through sheer will. `;
+        } else {
+            storyStart += `A powerful ${s} gifted with incredible abilities. `;
+        }
+        
+        if (p2 === "None") {
+            storyStart += `They wield the unstoppable power of ${p1}. `;
+        } else {
+            storyStart += `This hero wields a rare duality: ${p1} combined with ${p2}. `;
+        }
+
+        storyStart += `The foundations of the world shake as their story begins!`;
+        document.getElementById('backstory').innerText = storyStart;
+    }
+
+    function shuffle() {
+        if(!isPlaying) { music.play(); isPlaying = true; musicBtn.innerText = '🔊'; }
+
+        if (!locks['codename']) {
+            document.getElementById('val-nameFirst').value = data.nameFirst[Math.floor(Math.random() * data.nameFirst.length)];
+            document.getElementById('val-nameLast').value = data.nameLast[Math.floor(Math.random() * data.nameLast.length)];
+        }
+
+        Object.keys(data).forEach(key => {
+            if (!locks[key] && key !== 'nameFirst' && key !== 'nameLast') {
+                const randomVal = data[key][Math.floor(Math.random() * data[key].length)];
+                document.getElementById(`val-${key}`).value = randomVal;
+            }
+        });
+        updateBackstory();
+    }
+
+    document.getElementById('roll').addEventListener('click', shuffle);
+    shuffle();
+</script>
+
+</body>
+</html>
+
